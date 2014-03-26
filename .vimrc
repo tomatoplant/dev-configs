@@ -1,3 +1,5 @@
+set nocompatible
+
 " Auto-Install Vundle if needed (from http://www.erikzaadi.com/2012/03/19/auto-installing-vundle-from-your-vimrc/)
 " Setting up Vundle - the vim plugin bundler
 filetype off
@@ -15,51 +17,47 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 "Add your bundles here
 
-" Tab completion
+" Autocompletion
 Bundle 'ervandew/supertab'
+Bundle 'xolox/vim-easytags'
+Bundle 'xolox/vim-misc'
+Bundle 'Shougo/neocomplcache.vim'
 
-" Visible bookmarks
+" Bookmarks
 Bundle 'kshenoy/vim-signature'
 
-" NERDTree file browser
+" Browsers
 Bundle 'scrooloose/nerdtree'
+Bundle 'vim-scripts/taglist.vim'
 
-" Automatic syntax checking
-Bundle 'scrooloose/Syntastic'
-
-Bundle 'taglist.vim'
-Bundle 'vim-scripts/autotag'
-
-" Molokai color scheme
+" Colors
 Bundle 'tomasr/molokai'
-
-" Git integration
-Bundle 'tpope/vim-fugitive'
-
-" Fancy status bar
-Bundle 'bling/vim-airline'
-
-" Adds git info to fancy status bar
-Bundle 'airblade/vim-gitgutter'
-
-" Virtualenv support
-Bundle 'jmcantrell/vim-virtualenv'
-
-" Adds current function to status bar
-Bundle 'majutsushi/tagbar'
-
-" Quick filename matching
-Bundle 'kien/ctrlp.vim.git'
-
-" Silver Searcher (Ag) support
-Bundle 'rking/ag.vim'
-
-" Python-related bundles
-Bundle 'davidhalter/jedi-vim'
-Bundle 'klen/python-mode'
 
 " Debugging
 Bundle 'joonty/vdebug'
+
+" Searching
+Bundle 'kien/ctrlp.vim.git'
+Bundle 'rking/ag.vim'
+
+" Status bar plugins
+Bundle 'bling/vim-airline'
+Bundle 'airblade/vim-gitgutter'
+Bundle 'jmcantrell/vim-virtualenv'
+Bundle 'majutsushi/tagbar'
+
+" Tools
+Bundle 'scrooloose/Syntastic'
+Bundle 'tpope/vim-fugitive'
+
+" Java
+Bundle 'tpope/vim-classpath'
+Bundle 'adragomir/javacomplete'
+
+" Python
+Bundle 'davidhalter/jedi-vim'
+Bundle 'klen/python-mode'
+Bundle 'vim-scripts/python_match.vim'
 
 if iCanHazVundle == 0
     echo "Installing Bundles, please ignore key map error messages"
@@ -79,6 +77,7 @@ set number
 set ruler
 set shiftwidth=4
 set showcmd
+"set showtabline=0
 set tabstop=4
 set title
 
@@ -92,18 +91,36 @@ let sh_fold_enabled=1         " sh
 let vimsyn_folding='af'       " Vim script
 let xml_syntax_folding=1      " XML
 
-autocmd Syntax c,cpp,vim,xml,html,xhtml,python,perl setlocal foldmethod=syntax
+autocmd Syntax c,cpp,java,vim,xml,html,xhtml,python,perl setlocal foldmethod=syntax
 autocmd Syntax python setlocal foldmethod=indent | setlocal foldlevel=0 | setlocal foldnestmax=1
 
 set foldlevel=1
 set foldnestmax=2
 
 " ====== KEY BINDINGS ======
-map <F2> :NERDTreeToggle<CR>
-map <F3> :TlistToggle<CR>
+map <silent> <F2> :NERDTreeToggle<CR>
+map <silent> <F3> :TlistToggle<CR>
+
+" Command-line mappings
+cnoremap <C-a> <Home>
+cnoremap <C-d> <Del>
+
+" Normal mode mappings
+nnoremap <silent> <Tab> :bn<cr>
+nnoremap <silent> <S-Tab> :bp<cr>
+nnoremap <silent> <Leader>1 :b1<cr>
+nnoremap <silent> <Leader>2 :b2<cr>
+nnoremap <silent> <Leader>3 :b3<cr>
+nnoremap <silent> <Leader>4 :b4<cr>
+nnoremap <silent> <Leader>5 :b5<cr>
+nnoremap <silent> <Leader>6 :b6<cr>
+nnoremap <silent> <Leader>7 :b7<cr>
+nnoremap <silent> <Leader>8 :b8<cr>
+nnoremap <silent> <Leader>9 :b#<cr>
 
 " ====== OMNICOMPLETION ======
-"set omnifunc=syntaxcomplete#Complete
+
+set omnifunc=syntaxcomplete#Complete
 
 " Update autocompletion text when using Up/Down keys in menu
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
@@ -112,15 +129,21 @@ inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 " ====== AUTOLOAD FILETYPE ======
 filetype plugin on
 
-" JSON and Javascript customizations
 au BufRead,BufNewFile *.json    set filetype=js
 au BufRead,BufNewFile *.js      set filetype=js
 au BufRead,BufNewFile *.events  set filetype=events
 au BufRead,BufNewFile *.inc     set filetype=apache
+
 au FileType events command Pretty execute ".!python -m json.tool"
 au FileType events nmap = :Pretty<CR>
 au FileType js command Pretty execute "%!python -m json.tool"
 au FileType js nmap = :Pretty<CR>
+
+" Use javacomplete for omnicompletion
+au FileType java setlocal omnifunc=javacomplete#Complete
+
+" Use vim-classpath to detect the classpath, and feed the result to javacomplete
+au FileType java let b:classpath=substitute(classpath#detect(), ",", ":", "g")
 
 " ====== COLORS ======
 
@@ -133,14 +156,27 @@ hi PmenuThumb ctermfg=236
 
 " ====== PLUGIN OPTIONS ======
 
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+let g:airline_left_sep = '►'
+let g:airline_right_sep = '◀︎'
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline_theme = 'murmur'
+
 let g:ctrlp_root_markers = ['.git']    " project root markers
+let g:easytags_auto_update = 1
+let g:neocomplcache_enable_at_startup = 1
 let g:pymode_lint_ignore = "E501"      " ignore line-too-long erros
 let g:pymode_rope_vim_completion = 0   " disable autocompletion (necessary to use jedi-vim)
-let Tlist_Process_File_Always = 1      " process tags even when taglist is closed
-let Tlist_Use_Right_Window = 1
-let Tlist_WinWidth = 35
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme = 'murmur'
+let g:Tlist_Process_File_Always = 1    " process tags even when taglist is closed
+let g:Tlist_Use_Right_Window = 1
+let g:Tlist_WinWidth = 35
 
 " Avoid airline bug with completion menu disappearing.
 " See https://github.com/bling/vim-airline/issues/78
