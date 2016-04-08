@@ -19,42 +19,47 @@ Bundle 'gmarik/vundle'
 
 " Autocompletion
 Bundle 'ervandew/supertab'
-Bundle 'xolox/vim-easytags'
-Bundle 'xolox/vim-misc'
-Bundle 'Shougo/neocomplcache.vim'
+"Bundle 'xolox/vim-easytags'
+"Bundle 'xolox/vim-misc'
+"Bundle 'Shougo/neocomplcache.vim'
 
 " Bookmarks
 Bundle 'kshenoy/vim-signature'
 
 " Browsers
 Bundle 'scrooloose/nerdtree'
-Bundle 'vim-scripts/taglist.vim'
+"Bundle 'vim-scripts/taglist.vim'
 
 " Colors
 Bundle 'tomasr/molokai'
 
 " Debugging
-Bundle 'joonty/vdebug'
+"Bundle 'joonty/vdebug'
 
 " Searching
 Bundle 'kien/ctrlp.vim.git'
-Bundle 'rking/ag.vim'
+Bundle 'cgky/ag.vim'
 
 " Status bar plugins
 Bundle 'bling/vim-airline'
-Bundle 'airblade/vim-gitgutter'
-Bundle 'jmcantrell/vim-virtualenv'
-Bundle 'majutsushi/tagbar'
+Bundle 'bling/vim-bufferline'
+"Bundle 'airblade/vim-gitgutter'
+"Bundle 'jmcantrell/vim-virtualenv'
+"Bundle 'majutsushi/tagbar'
 
 " Tools
-Bundle 'scrooloose/Syntastic'
-Bundle 'tpope/vim-fugitive'
+Bundle('scrooloose/Syntastic')
+"Bundle('pydave/AsyncCommand')
+"Bundle('stgpetrovic/syntastic-async')
+"Bundle 'tpope/vim-fugitive'
+Bundle 'AndrewRadev/linediff.vim'
 
 " Java
-Bundle 'tpope/vim-classpath'
-Bundle 'adragomir/javacomplete'
+"Bundle 'tpope/vim-classpath'
+"Bundle 'adragomir/javacomplete'
 
 " Python
+"Bundle 'Valloric/YouCompleteMe' 
 Bundle 'davidhalter/jedi-vim'
 Bundle 'klen/python-mode'
 Bundle 'vim-scripts/python_match.vim'
@@ -71,6 +76,7 @@ syntax on
 set colorcolumn=100
 set expandtab
 set fillchars+=vert:\ ,
+set hlsearch
 set incsearch
 set laststatus=2      " causes status bar to be shown by default
 set number
@@ -79,23 +85,24 @@ set shiftwidth=4
 set showcmd
 "set showtabline=0
 set tabstop=4
+set tw=99
 set title
 
 "
 " FOLDING OPTIONS
 "
-let javaScript_fold=1         " JavaScript
-let perl_fold=1               " Perl
-let php_folding=1             " PHP
-let sh_fold_enabled=1         " sh
-let vimsyn_folding='af'       " Vim script
-let xml_syntax_folding=1      " XML
+"let javaScript_fold=1         " JavaScript
+"let perl_fold=1               " Perl
+"let php_folding=1             " PHP
+"let sh_fold_enabled=1         " sh
+"let vimsyn_folding='af'       " Vim script
+"let xml_syntax_folding=1      " XML
 
-autocmd Syntax c,cpp,java,vim,xml,html,xhtml,python,perl setlocal foldmethod=syntax
-autocmd Syntax python setlocal foldmethod=indent | setlocal foldlevel=0 | setlocal foldnestmax=1
+"autocmd Syntax c,cpp,java,vim,xml,html,xhtml,python,perl setlocal foldmethod=syntax
+"autocmd Syntax python setlocal foldmethod=indent | setlocal foldlevel=0 | setlocal foldnestmax=1
 
-set foldlevel=1
-set foldnestmax=2
+"set foldlevel=1
+"set foldnestmax=2
 
 " ====== KEY BINDINGS ======
 map <silent> <F2> :NERDTreeToggle<CR>
@@ -106,17 +113,8 @@ cnoremap <C-a> <Home>
 cnoremap <C-d> <Del>
 
 " Normal mode mappings
-nnoremap <silent> <Tab> :bn<cr>
-nnoremap <silent> <S-Tab> :bp<cr>
-nnoremap <silent> <Leader>1 :b1<cr>
-nnoremap <silent> <Leader>2 :b2<cr>
-nnoremap <silent> <Leader>3 :b3<cr>
-nnoremap <silent> <Leader>4 :b4<cr>
-nnoremap <silent> <Leader>5 :b5<cr>
-nnoremap <silent> <Leader>6 :b6<cr>
-nnoremap <silent> <Leader>7 :b7<cr>
-nnoremap <silent> <Leader>8 :b8<cr>
-nnoremap <silent> <Leader>9 :b#<cr>
+nnoremap <silent> <Tab> gt<cr>
+nnoremap <silent> <S-Tab> gT<cr>
 
 " ====== OMNICOMPLETION ======
 
@@ -140,10 +138,10 @@ au FileType js command Pretty execute "%!python -m json.tool"
 au FileType js nmap = :Pretty<CR>
 
 " Use javacomplete for omnicompletion
-au FileType java setlocal omnifunc=javacomplete#Complete
+"au FileType java setlocal omnifunc=javacomplete#Complete
 
 " Use vim-classpath to detect the classpath, and feed the result to javacomplete
-au FileType java let b:classpath=substitute(classpath#detect(), ",", ":", "g")
+"au FileType java let b:classpath=substitute(classpath#detect(), ",", ":", "g")
 
 " ====== COLORS ======
 
@@ -162,14 +160,22 @@ endif
 
 let g:airline_left_sep = '►'
 let g:airline_right_sep = '◀︎'
-let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#bufferline#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#buffer_nr_show = 1
+"let g:airline#extensions#tabline#buffer_nr_format = 'b%s: '
 let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_buffers = 0
+let g:airline#extensions#tabline#show_tab_nr = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
 let g:airline_theme = 'murmur'
 
 let g:ctrlp_root_markers = ['.git']    " project root markers
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](target|lib)$',
+  \ 'file': '\v\.(class)$',
+  \ }
 let g:easytags_auto_update = 1
 let g:neocomplcache_enable_at_startup = 1
 let g:pymode_lint_ignore = "E501"      " ignore line-too-long erros
